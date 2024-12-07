@@ -1,0 +1,15 @@
+{
+  "name": "auctionary-server",
+  "version": "0.0.1",
+  "description": "auctionary server",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.ts",
+    "build": "next build",
+    "start": "NODE_ENV=production node index.ts",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
+}
