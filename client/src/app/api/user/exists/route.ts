@@ -1,14 +1,16 @@
-//todo: (1) This should be a get request instead
+//--- DONE --- todo: (1) This should be a get request instead
 
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function GET(request: Request): Promise<NextResponse> {
   await dbConnect();
 
   try {
-    const {email, username} = await request.json();
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
+    const username = searchParams.get('username');
 
     if (!email && !username) {
       return NextResponse.json({success: false, message: "Invalid Request"}, { status:400 });
