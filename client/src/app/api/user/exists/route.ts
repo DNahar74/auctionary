@@ -1,8 +1,10 @@
+//todo: (1) This should be a get request instead
+
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User.model";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request): Promise<NextResponse> {
+export async function POST(request: Request): Promise<NextResponse> {
   await dbConnect();
 
   try {
