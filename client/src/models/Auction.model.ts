@@ -3,6 +3,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface Auction extends Document{
+  auctioneerId: mongoose.Types.ObjectId;
   title: string;
   description: string;
   isPublic: boolean;
@@ -20,6 +21,11 @@ export interface Auction extends Document{
 }
 
 const AuctionSchema: Schema<Auction> = new Schema({
+  auctioneerId: { 
+    type: Schema.Types.ObjectId, 
+    ref: "Users", 
+    required: true,
+  },
   title: { 
     type: String, 
     required: [true, "Title is required"],
