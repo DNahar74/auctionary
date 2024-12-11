@@ -9,7 +9,7 @@ export interface Product extends Document{
   title: string;
   description: string;
   basePrice: number;
-  isPublic?: boolean;
+  isPublic: boolean;
   auctionId: mongoose.Types.ObjectId;
   auctioneerId: mongoose.Types.ObjectId;
   salePrice?: number;
@@ -20,12 +20,14 @@ const ProductSchema: Schema<Product> = new Schema({
   title: { 
     type: String, 
     required: [true, "Title is required"],
+    maxlength: [100, "Title can be at most 100 characters long"],
     trim: true,
   },
   description: { 
     type: String, 
     required: [true, "Description is required"],
-    maxlength: [1000, "Description must be at most 1000 characters long"],
+    maxlength: [1000, "Description can be at most 1000 characters long"],
+    trim: true,
   },
   basePrice: { 
     type: Number,
