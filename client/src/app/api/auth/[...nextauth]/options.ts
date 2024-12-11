@@ -1,6 +1,7 @@
 //todo: (1) Create callbacks for signin, signout and signup methods
 
-import { NextAuthOptions } from "next-auth";
+import axios from "axios";
+import { JWT, NextAuthOptions, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
@@ -11,18 +12,45 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+    async signIn({ user, account}) {
+      if (account?.provider === 'google') {
+        const userExists = await axios.get(`/api/user/exists?email=${user.email}`);
+        if (!userExists.data.success) {
+          return false;
+        }
+        if (userExists.data.exists) {
+          return true;
+        } else {
+          const newUser = await axios.post('/api/user/create', { username: user.name, email: user.email });
+          if (!newUser.data.success) {
+            return false;
+          }
+          return true;
+        }
+      } 
+      return false;
+    },
     async jwt({ token, user }) {
-      //? This assigns all the properties of user to token
       if (user) {
-        // token.email = user.email;
+        const response = await axios.get(`/api/user/details?email=${user.email}`);
+        if (response.data.success) {
+          const mongoUser = response.data.user;
+          token.username = mongoUser.username;
+          token.isAnonymous = mongoUser.isAnonymous;
+          token.cyclingUsernames = mongoUser?.cyclingUsernames;
+          token.wallet = mongoUser.wallet; 
+        }
       }
 
-      return token
+      return token;
     },
-    async session({ session, token }) {
-      //? This assigns all the properties of token to a user object in session
+    async session({ session, token }: { session: Session, token: JWT}) {
       if (token) {
-        // session.user.email = token.email;
+        session.user.username = token.username;
+        session.user.email = token.email;
+        session.user.isAnonymous = token.isAnonymous;
+        session.user.cyclingUsernames = token.cyclingUsernames || [];
+        session.user.wallet = token.wallet;
       }
 
       return session
