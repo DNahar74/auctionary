@@ -1,38 +1,63 @@
 //todo: (1) Create callbacks for signin, signout and signup methods
 
+import { dbConnect } from "@/lib/dbConnect";
+import UserModel from "@/models/User.model";
 import axios from "axios";
 import { JWT, NextAuthOptions, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+
+const baseURL = "http://localhost:3000"
 
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: 'openid profile email',
+        },
+      },
     })
   ],
   callbacks: {
     async signIn({ user, account}) {
       if (account?.provider === 'google') {
-        const userExists = await axios.get(`/api/user/exists?email=${user.email}`);
-        if (!userExists.data.success) {
-          return false;
-        }
-        if (userExists.data.exists) {
-          return true;
-        } else {
-          const newUser = await axios.post('/api/user/create', { username: user.name, email: user.email });
-          if (!newUser.data.success) {
-            return false;
+        try {
+          await dbConnect();
+
+          const existingUser = await UserModel.findOne({ email: user.email });
+
+          if (!existingUser) {
+            //? Create new user
+            const newUser = new UserModel({
+              username: user.name?.slice(0, 19),
+              email: user.email,
+              isAnonymous: true,
+              cyclingUsernames: [],
+              wallet: 0,
+              auctionsHosted: [],
+              auctionsJoined: [],
+              productsOwned: [],
+              dailyLoginBonusClaimed: false,
+            })
+
+            await newUser.save();
+
+            return true;
+          } else {
+            return true;
           }
-          return true;
+        } catch (error) {
+          console.error("Google sign-in error:", error);
+          return false;
         }
       } 
       return false;
     },
     async jwt({ token, user }) {
       if (user) {
-        const response = await axios.get(`/api/user/details?email=${user.email}`);
+        const response = await axios.get(`${baseURL}/api/user/details?email=${user.email}`);
         if (response.data.success) {
           const mongoUser = response.data.user;
           token.username = mongoUser.username;
@@ -58,9 +83,8 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     newUser: '/signup',
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
-    error: '/auth/error'
+    signIn: '/login',
+    error: '/error'
   },
   session: {
     strategy: 'jwt'
