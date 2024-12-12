@@ -20,7 +20,7 @@ export interface User extends Document{
 
 const UserSchema: Schema<User> = new Schema({
   username: { 
-    type: "string",
+    type: String,
     required: [true, "Username is required"],
     minlength: [1, "Username cannot be empty"],
     maxlength: [20, "Username can be at most 20 characters long"],
@@ -28,23 +28,23 @@ const UserSchema: Schema<User> = new Schema({
     trim: true,
   },
   email: {
-    type: "string",
+    type: String,
     required: [true, "Email is required"],
     unique: true,
   },
   isAnonymous: {
-    type: "boolean",
+    type: Boolean,
     default: false,
   },
   cyclingUsernames: [{
-    type: "string",
+    type: String,
     minlength: [1, "Username cannot be empty"],
     maxlength: [20, "Username can be at most 20 characters long"],
     unique: true,
     trim: true,
   }],
   wallet: {
-    type: "number",
+    type: Number,
     default: 0,
     min: 0,
   },
@@ -71,7 +71,7 @@ const UserSchema: Schema<User> = new Schema({
     },
   }],
   dailyLoginBonusClaimed: {
-    type: "boolean",
+    type: Boolean,
     default: false,
   }
 })
