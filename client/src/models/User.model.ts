@@ -40,7 +40,6 @@ const UserSchema: Schema<User> = new Schema({
     type: String,
     minlength: [1, "Username cannot be empty"],
     maxlength: [20, "Username can be at most 20 characters long"],
-    unique: true,
     trim: true,
   }],
   wallet: {

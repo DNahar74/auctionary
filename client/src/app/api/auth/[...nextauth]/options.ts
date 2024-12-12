@@ -30,11 +30,12 @@ export const authOptions: NextAuthOptions = {
 
           if (!existingUser) {
             //? Create new user
+            const name = (user?.name?.length ?? 0) > 20 ? user.name?.slice(0, 19) : user.name;
             const newUser = new UserModel({
-              username: user.name?.slice(0, 19),
+              username: name,
               email: user.email,
               isAnonymous: true,
-              cyclingUsernames: [],
+              cyclingUsernames: [name],
               wallet: 0,
               auctionsHosted: [],
               auctionsJoined: [],
