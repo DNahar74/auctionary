@@ -9,14 +9,15 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
   const path = request.nextUrl.pathname;
 
-  const publicRoutes = ['/', '/login', '/signup']
+  const publicRoutes = ['/login', '/signup']
+  const privateRoutes = ['/dashboard', '/profile'];
   
   if (token && publicRoutes.includes(path)) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  if (!token && !publicRoutes.includes(path)) {
-    return NextResponse.redirect(new URL('/', request.url))
+  if (!token && privateRoutes.includes(path)) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
 }
@@ -24,8 +25,10 @@ export async function middleware(request: NextRequest) {
 // See "Matching Paths" below to learn more 
 export const config = {
   matcher: [
-    '/',
     '/login',
     '/signup',
+    '/dashboard',
+    '/profile',
+    // Add more routes here as needed...
   ]
 }
