@@ -13,13 +13,13 @@ const Navbar: React.FC = () => {
     <nav className="bg-[#333333] p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
-        <div className="text-[#A3E635] text-2xl font-bold">
+        <div className="text-[#4B9CD3] text-2xl font-bold">
           <Link href="/">Auctionary</Link>
         </div>
 
         {/* Navigation Links */}
         <div className="hidden md:flex space-x-6">
-          <Link href="/profile" className="text-[#4B9CD3] hover:text-[#A3E635] transition">
+          <Link href="/profile" className="text-[#FFFFFF] hover:text-[#A3E635] transition">
             Profile
           </Link>
         </div>
